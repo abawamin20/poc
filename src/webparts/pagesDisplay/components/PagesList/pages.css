@@ -1,0 +1,32 @@
+.pagination-button,
+.ms-Button--default {
+  background-color: #65b2e9;
+}
+.pagination-button:hover,
+.ms-Button--default:hover {
+  background-color: #126aa8 !important;
+}
+
+.ms-Button--primary {
+  background-color: #126aa8 !important;
+}
+.ms-Button--primary:hover {
+  background-color: #126aa8 !important;
+}
+.pagination_321a58d6 {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.ms-DetailsHeader-cell:hover {
+  background-color: "#90c2e9" !important;
+}
+
+.root-112 {
+  background-color: #126aa8 !important;
+  border: 1px solid #126aa8 !important;
+}
+
+.root-112:hover {
+  background-color: #65b2e9 !important;
+}

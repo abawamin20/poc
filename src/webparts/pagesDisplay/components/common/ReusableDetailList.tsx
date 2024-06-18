@@ -27,21 +27,27 @@ const customHeaderClass = mergeStyles({
   row: {
     selectors: {
       "&:nth-child(even)": {
-        backgroundColor: "#f3f2f1",
+        backgroundColor: "#D9EEFD",
       },
       "&:hover": {
-        backgroundColor: "#eaeaea",
+        backgroundColor: "#90c2e9",
       },
     },
   },
 });
-
 export interface IReusableDetailListProps {
-  columns: (onColumnClick: any, sortBy: string) => IColumn[];
+  columns: (
+    category: string,
+    onColumnClick: any,
+    sortBy: string,
+    isDecending: boolean
+  ) => IColumn[];
   items: any[];
   sortPages: (column: IColumn, isAscending: boolean) => void;
   sortBy: string;
   siteUrl: string;
+  category: string;
+  isDecending: boolean;
 }
 
 export class ReusableDetailList extends React.Component<
@@ -75,14 +81,15 @@ export class ReusableDetailList extends React.Component<
   };
 
   public render() {
-    const { columns, items, sortPages, sortBy } = this.props;
+    const { columns, items, sortPages, sortBy, category, isDecending } =
+      this.props;
 
     return (
       <div>
         <DetailsList
           items={items}
           compact={false}
-          columns={columns(sortPages, sortBy)}
+          columns={columns(category, sortPages, sortBy, isDecending)}
           selectionMode={SelectionMode.none}
           getKey={this._getKey}
           setKey="none"

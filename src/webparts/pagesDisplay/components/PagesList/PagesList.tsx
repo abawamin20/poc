@@ -7,6 +7,7 @@ import { IColumn } from "@fluentui/react";
 import { Pagination } from "@pnp/spfx-controls-react/lib/pagination";
 import { makeStyles, useId, Input } from "@fluentui/react-components";
 import styles from "./pages.module.scss";
+import "./pages.css";
 
 export interface IPagesListProps {
   context: WebPartContext;
@@ -22,17 +23,21 @@ const useStyles = makeStyles({
 });
 
 const PagesList = (props: IPagesListProps) => {
+  const context = props.context;
   const [catagory, setCatagory] = React.useState<string>("");
   const [searchText, setSearchText] = React.useState<string>("");
   const [pages, setPages] = React.useState<any[]>([]);
+  const [paginatedPages, setPaginatedPages] = React.useState<any[]>([]);
   const [sortBy, setSortBy] = React.useState<string>("");
   const [currentPageNumber, setCurrentPageNumber] = React.useState<number>(1);
   const [totalItems, setTotalItems] = React.useState<number | null>(null);
+  const [isDecending, setIsDecending] = React.useState<boolean>(false);
+  const pagesService = new PagesService(context);
+  const inputId = useId("input");
+  const inputStyles = useStyles();
 
-  const pagesService = new PagesService(props.context);
   React.useEffect(() => {
     window.addEventListener("catagory", (e: any) => {
-      console.log(35, e.detail);
       setCatagory(e.detail);
       getPages(e.detail);
     });
@@ -42,11 +47,11 @@ const PagesList = (props: IPagesListProps) => {
     page = 1,
     pageSize = 10,
     sortBy = "Created",
-    isSortedDescending = true,
+    isSortedDescending = isDecending,
     searchText = "",
     category = catagory
   ) => {
-    const url = `${props.context.pageContext.web.serverRelativeUrl}/SitePages/${category}`;
+    const url = `${context.pageContext.web.serverRelativeUrl}/SitePages/${category}`;
     pagesService
       .getFilteredPages(
         page,
@@ -57,45 +62,48 @@ const PagesList = (props: IPagesListProps) => {
         searchText
       )
       .then((res) => {
+        setTotalItems(res.length);
+        setPaginatedPages(res.slice(0, pageSize));
         setPages(res);
       });
   };
 
   const getPages = (path: string) => {
     fetchPages(1, 10, "Created", true, searchText, path);
-    updatetotalItems(path);
   };
 
   const sortPages = (column: IColumn) => {
     setSortBy(column.fieldName as string);
+    if (column.fieldName === sortBy) {
+      setIsDecending(!isDecending);
+    } else {
+      setIsDecending(true);
+    }
     fetchPages(1, 10, column.fieldName, column.isSortedDescending, searchText);
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPageNumber(page);
-    fetchPages(page, 10, "Created", true, searchText);
+    // Ensure page is an integer
+    const currentPage = Math.ceil(page);
+
+    // Update current page number state
+    setCurrentPageNumber(currentPage);
+
+    // Calculate slice indices for pagination
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = currentPage * 10;
+
+    // Slice the 'pages' array to get the current page of data
+    const paginated = pages.slice(startIndex, endIndex);
+
+    // Update paginated pages state
+    setPaginatedPages(paginated);
   };
 
   const handleSearch = () => {
     fetchPages(1, 10, "Created", true, searchText);
   };
 
-  const updatetotalItems = (path: any) => {
-    setTotalItems(null);
-    pagesService
-      .getItemCount(
-        `${props.context.pageContext.web.serverRelativeUrl}/SitePages/${path}`,
-        searchText
-      )
-      .then((count: any) => {
-        console.log(count);
-        setTotalItems(count);
-      });
-  };
-
-  const inputId = useId("input");
-  const inputStyles = useStyles();
-  console.log(totalItems);
   return (
     <div className="w-100">
       <div className={`${styles.top}`}>
@@ -107,7 +115,8 @@ const PagesList = (props: IPagesListProps) => {
             <span className="fs-6 badge bg-primary">{catagory}</span>
           </span>
 
-          <div className={inputStyles.root}>
+          <div className={`${inputStyles.root} d-flex align-items-center me-2`}>
+            <label className="fs-6 me-2">Search this Knowledge Base</label>
             <Input
               id={inputId}
               value={searchText}
@@ -124,10 +133,18 @@ const PagesList = (props: IPagesListProps) => {
 
         {pages?.length > 0 && (
           <div
-            className={`d-flex justify-content-between align-items-center fs-5 fw-bold my-3`}
+            className={`${styles["second-section"]} d-flex justify-content-between align-items-center fs-5 fw-bold px-2 my-2`}
           >
-            <div></div>
-
+            {totalItems ? (
+              <Pagination
+                currentPage={currentPageNumber}
+                totalPages={Math.ceil(totalItems / 10)}
+                onChange={(page) => handlePageChange(page)}
+                limiterIcon={"Emoji12"}
+              />
+            ) : (
+              ""
+            )}
             <span>
               Displaying Articles {currentPageNumber} - {currentPageNumber + 9}{" "}
               of {totalItems}
@@ -138,23 +155,14 @@ const PagesList = (props: IPagesListProps) => {
 
       {pages?.length > 0 && (
         <ReusableDetailList
-          items={pages}
+          items={paginatedPages}
           columns={PagesColumns}
+          category={catagory}
           sortPages={sortPages}
           sortBy={sortBy}
           siteUrl={window.location.origin}
+          isDecending={isDecending}
         />
-      )}
-
-      {totalItems ? (
-        <Pagination
-          currentPage={currentPageNumber}
-          totalPages={Math.ceil(totalItems / 10)}
-          onChange={(page) => handlePageChange(page)}
-          limiterIcon={"Emoji12"}
-        />
-      ) : (
-        ""
       )}
     </div>
   );

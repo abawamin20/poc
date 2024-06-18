@@ -18,36 +18,12 @@ class PagesService {
     folderPath: string = "",
     searchText: string = ""
   ) => {
-    const skip = (pageNumber - 1) * pageSize;
-    const list = this._sp.web.lists.getByTitle("Site Pages");
-    const filterQuery = `FileDirRef eq '${folderPath}'${
-      searchText ? ` and substringof('${searchText}', Title)` : ""
-    }`;
-
-    const pages: any[] = await list.items
-      .filter(filterQuery)
-      .select(
-        "Title",
-        "Description",
-        "FileLeafRef",
-        "FileRef",
-        "Modified",
-        "Id"
-      )
-      .skip(skip)
-      .top(pageSize)
-      .orderBy(orderBy, isAscending)();
-
-    return pages;
-  };
-
-  public async getItemCount(
-    folderPath: string = "",
-    searchText: string = ""
-  ): Promise<number> {
     try {
+      const skip = (pageNumber - 1) * pageSize;
       const list = this._sp.web.lists.getByTitle("Site Pages");
-      const filterQuery = `FileDirRef eq '${folderPath}'${
+
+      // Use startswith to include files in subfolders and exclude folders
+      const filterQuery = `startswith(FileDirRef, '${folderPath}') and FSObjType eq 0${
         searchText ? ` and substringof('${searchText}', Title)` : ""
       }`;
 
@@ -60,14 +36,15 @@ class PagesService {
           "FileRef",
           "Modified",
           "Id"
-        )();
-      console.log(pages);
-      return pages.length;
+        )
+        .skip(skip)
+        .orderBy(orderBy, isAscending)();
+      return pages;
     } catch (error) {
-      console.error("Error in getItemCount:", error);
-      throw error; // or handle error as needed
+      console.error("Error fetching filtered pages:", error);
+      throw new Error("Error fetching filtered pages");
     }
-  }
+  };
 }
 
 export default PagesService;

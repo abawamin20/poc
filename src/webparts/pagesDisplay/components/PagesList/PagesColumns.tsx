@@ -1,7 +1,12 @@
 import * as React from "react";
 import { IColumn } from "@fluentui/react";
 import styles from "./pages.module.scss";
-export const PagesColumns = (onColumnClick: any, sortBy: string): IColumn[] => [
+export const PagesColumns = (
+  category: string,
+  onColumnClick: any,
+  sortBy: string,
+  isDecending: boolean
+): IColumn[] => [
   {
     key: "Id",
     name: "#",
@@ -10,9 +15,6 @@ export const PagesColumns = (onColumnClick: any, sortBy: string): IColumn[] => [
     maxWidth: 20,
     isRowHeader: true,
     isResizable: true,
-    isSorted: sortBy === "Id",
-    isSortedDescending: false,
-    onColumnClick: onColumnClick,
     data: "string",
     isPadded: true,
   },
@@ -20,14 +22,15 @@ export const PagesColumns = (onColumnClick: any, sortBy: string): IColumn[] => [
     key: "Title",
     name: "Article",
     fieldName: "Title",
-    minWidth: 500,
-    maxWidth: 700,
+    minWidth: 800,
+    maxWidth: 1200,
     isRowHeader: true,
     isResizable: true,
     isSorted: sortBy === "Title",
-    onColumnClick: onColumnClick,
+    onColumnClick: (e, column: IColumn) => onColumnClick(column),
     data: "string",
     isPadded: true,
+    isSortedDescending: isDecending,
     onRender(item) {
       return (
         <div className={`row`}>
@@ -41,7 +44,7 @@ export const PagesColumns = (onColumnClick: any, sortBy: string): IColumn[] => [
               >
                 Knowledge base -
               </span>
-              {item.Title}
+              {category}
             </div>
           </div>
         </div>
@@ -56,10 +59,11 @@ export const PagesColumns = (onColumnClick: any, sortBy: string): IColumn[] => [
     maxWidth: 350,
     isRowHeader: true,
     isResizable: true,
-    isSorted: sortBy === "Title",
-    onColumnClick: onColumnClick,
+    isSorted: sortBy === "Modified",
+    onColumnClick: (e, column: IColumn) => onColumnClick(column),
     data: "string",
     isPadded: true,
+    isSortedDescending: isDecending,
     onRender(item) {
       const date = new Date(item.Modified);
 
