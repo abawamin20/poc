@@ -29,13 +29,10 @@ const customHeaderClass = mergeStyles({
       "&:nth-child(even)": {
         backgroundColor: "#D9EEFD",
       },
-      "&:hover": {
-        backgroundColor: "#90c2e9",
-      },
     },
   },
 });
-export interface IReusableDetailListProps {
+export interface IReusableDetailListcomponents {
   columns: (
     category: string,
     onColumnClick: any,
@@ -51,28 +48,28 @@ export interface IReusableDetailListProps {
 }
 
 export class ReusableDetailList extends React.Component<
-  IReusableDetailListProps,
+  IReusableDetailListcomponents,
   {}
 > {
-  constructor(props: IReusableDetailListProps) {
-    super(props);
+  constructor(components: IReusableDetailListcomponents) {
+    super(components);
   }
 
-  componentDidUpdate(prevProps: IReusableDetailListProps) {
-    if (prevProps.items !== this.props.items) {
+  componentDidUpdate(prevcomponents: IReusableDetailListcomponents) {
+    if (prevcomponents.items !== this.props.items) {
       this.forceUpdate();
     }
   }
 
-  _onRenderDetailsHeader = (props: any) => {
-    if (!props) {
+  _onRenderDetailsHeader = (components: any) => {
+    if (!components) {
       return null;
     }
 
     // Apply custom styles to the header
     return (
       <DetailsHeader
-        {...props}
+        {...components}
         styles={{
           root: customHeaderClass, // Apply custom styles
         }}

@@ -12,7 +12,7 @@ export const PagesColumns = (
     name: "#",
     fieldName: "Id",
     minWidth: 10,
-    maxWidth: 20,
+    maxWidth: 40,
     isRowHeader: true,
     isResizable: true,
     data: "string",
@@ -39,12 +39,12 @@ export const PagesColumns = (
               <h5 className="">{item.Title}</h5>
             </div>
             <div className={`${styles.subTitle}`}>
-              <span
-                className={`${styles.knowledgeText} card-subtitle mb-2 text-muted`}
-              >
-                Knowledge base -
+              <span className={` fs-6`}>
+                Knowledge base{" "}
+                <span className={`${styles.knowledgeText}`}>
+                  {category && <span className=""> . {category}</span>}
+                </span>
               </span>
-              {category}
             </div>
           </div>
         </div>

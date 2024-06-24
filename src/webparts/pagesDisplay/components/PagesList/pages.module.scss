@@ -5,7 +5,7 @@
   .subTitle {
     font-weight: normal;
     .knowledgeText {
-      color: #19405f;
+      color: #2492ec;
       font-size: small;
     }
   }
@@ -17,5 +17,26 @@
   }
   .second-section {
     background-color: #90c2e9;
+    .pagination-btns {
+      color: #1676bf;
+      cursor: pointer;
+      font-size: small;
+    }
+
+    .disabledPagination {
+      color: #c5d7e3 !important;
+      pointer-events: none; /* To prevent clicking */
+    }
+  }
+}
+
+.knowledgeText {
+  color: #2492ec;
+  font-size: small;
+
+  span {
+    color: #0a6fc1;
+    font-weight: 600;
+    font-size: large;
   }
 }
